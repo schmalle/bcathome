@@ -5,7 +5,7 @@
 
 * Keycloak 4.0.0 Beta 3
 * Apache 2
-* mode-auth-openidc
+* mode-auth-openidc (evtl. in universe package from Ubuntu)
 * nginx
 * letsencrypt
 
@@ -63,48 +63,109 @@ openssl pkcs12 -in client.p12 -out client.pem -clcerts
 
 ## Installation ##
 
-1. Install Keyclock and create user admin / verysecure
+1. Unpack Keycloack
+2. Edit standalone.xml in /standalone/configuration/
+
+add within
+
+<security-realmsY add
+
+<security-realm name="ssl-realm">
+     <server-identities>
+         <ssl>
+             <keystore path="application.keystore" relative-to="jboss.server.config.dir" keystore-password="<yourpassword>" alias="dev.mschmall.de (let's encrypt authority x3)" key-password="<yourpassword>" />
+         </ssl>
+     </server-identities>
+     <authentication>
+         <local default-user="$local" allowed-users="*" skip-group-loading="true"/>
+         <properties path="application-users.properties" relative-to="jboss.server.config.dir"/>
+     </authentication>
+             <authentication>
+                     <truststore path="server.truststore" relative-to="jboss.server.config.dir" keystore-password="flk48e7" />
+             </authentication>
+
+ </security-realm>
+
+
+Additional search for the HTTPS listener and add
 
 
 
 
-****
-vagrant box add ubuntu/bionic64
-vagrant init ubuntu/bionic64
-vagrant up
-vagrant ssh
-vagrant update
-vagrant upgrade
-wget http://download.oracle.com/otn-pub/java/jdk/10.0.1+10/fb4372174a714e6b8c52526dc134031e/jdk-10.0.1_linux-x64_bin.tar.gz
-mv jdk-10.0.1 /opt/
+#generate-self-signed-certificate-host="localhost"/>
 
-cd /vagrant
+(adapt for your passwords etc.)
 
-update-alternatives --install /usr/bin/javac javac /opt/jdk-10.0.1/bin/javac 1
-update-alternatives --install /usr/bin/java java /opt/jdk-10.0.1/bin/java 1
+copy /home/flake/keycloak-4.0.0.Beta3/standalone/configuration/application.keystore
 
-apt-get mysql-server
-apt install unzip
+Create admin user for keycloak locally
 
-wget https://downloads.jboss.org/keycloak/4.0.0.Beta3/keycloak-4.0.0.Beta3.zip
-unzip keycloak-4.0.0.Beta3.zip
-cd keycloak-4.0.0.Beta3/bin/
+./add-user-keycloak.sh -u admin
+
+
+3. start keycloak by calling ./standalone.sh -b <IP to bind to>
+
+Start configuring Flows / Grants
+(taken from https://www.keycloak.org/docs/3.3/server_admin/topics/authentication/x509.html)
+
+4.
+
 sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
 apt-get install libapache2-mod-auth-openidc
 
 
- Keycloack 4.0.0.Beta 3
-
-
-****
 
 
 
 
-openssl genrsa -des3 -out ca.key 4096
-openssl req -new -x509 -days 365 -key ca.key -out ca.crt
 
-openssl genrsa -des3 -out client.key 4096
-openssl req -new -key client.key -out client.csr
 
-openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out client.crt
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/html
+
+	ErrorLog /proc/self/fd/1
+	CustomLog /proc/self/fd/2 combined
+
+	OIDCProviderMetadataURL http://keycloak:8080/auth/realms/Testrealm/.well-known/openid-configuration
+	#OIDCRedirectURI http://openidc/oauth2callback
+	OIDCRedirectURI http://openidc/protected/redirect_uri
+	OIDCCryptoPassphrase 0123456789
+	OIDCClientID testclient
+	OIDCClientSecret 12816dc7-cf40-4abc-8df7-581e56930cf5
+
+	OIDCSessionType server-cache:persistent
+
+	OIDCRemoteUserClaim email
+	OIDCScope "openid email"
+	OIDCPassClaimsAs environment
+
+	Header setifempty Cache-Control "max-age=0, must-revalidate"
+
+	RedirectTemp /logout http://openidc/protected/redirect_uri?logout=http%3A%2F%2Fopenidc%2F%3Fwe-have-no-loggedout-page-yet
+
+	<Location /protected>
+		AuthType openid-connect
+		Require valid-user
+	</Location>
+
+</VirtualHost>
+
+
+
+OIDCProviderMetadataURL https://keycloak.example.net/auth/realms/master/.well-known/openid-configuration
+OIDCRedirectURI https://www.example.net/oauth2callback
+OIDCCryptoPassphrase random1234
+OIDCClientID <your-client-id-registered-in-keycloak>
+OIDCClientSecret <your-client-secret-registered-in-keycloak>
+OIDCRemoteUserClaim email
+OIDCScope "openid email"
+
+<Location /example/>
+   AuthType openid-connect
+   Require valid-user
+</Location>
+
+
+
+OpenID Connect Provider error: Remote user could not be set: contact the website administrator
