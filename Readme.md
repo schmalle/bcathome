@@ -8,22 +8,24 @@ A typical BC architecure looks like this
 
 ![Beycond Corp architecture](https://www.beyondcorp.com/img/no-vpn-security-3-full.jpg)
 
-I am fascinated by this idea and wanted to use this approach to secure my own private servers, but fully based on Opensource.
+So the main components are
+
+* an identity and access management (IAM) solution
+* an access gateway / access proxy
+
+I am fascinated by the Beyond Copr idea and wanted to use this approach to secure my own private servers, but fully based on Opensource.
 
 The scope of this paper is to provide you an overview and a good start set.
-To authenticate in a modern way, we use client certificates for authentication, as a starter purely with software certificates.
 
-We will setup the IAM solution and the access proxy, both components are needed for an Beyond corp setup.
+To authenticate in a modern way, we use client certificates for authentication, as a starter purely with software certificates.
 
 As IAM solution I decided to use the great keycloak toolkit ![](https://www.keycloak.org/). The access proxy is based on the known Apache 2 swerver with mode-auth-openidc ![](https://github.com/zmartzone/mod_auth_openidc). All certificas were issued by the  letsencrypt.
 
-
-
-## Tools used ##
+## Tools / Versions used in detail used ##
 
 * Keycloak 4.0.0
-* Apache 2
-* mode-auth-openidc (evtl. in universe package from Ubuntu)
+* Apache 2 (from Ubuntu 18.04 repository)
+* mode-auth-openidc (evtl. in universe package from Ubuntu), version from 20th of June 2018
 * letsencrypt
 
 
