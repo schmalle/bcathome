@@ -1,12 +1,29 @@
 # Beyond corp at home #
 
+## Intro
 
-## Tools ##
+Ever read something about Beyond Corp [https://cloud.google.com/beyondcorp/] ? This is a very cool approach from Google and others basically to make all former intranet services available in the internet based on zero trust approaches. This drives efficiency dramatically and reduces vpn bottlenecks a lot.
 
-* Keycloak 4.0.0 Beta 3
+A typical BC architecure looks like this
+
+![Beycond Corp architecture](https://www.beyondcorp.com/img/no-vpn-security-3-full.jpg)
+
+I am fascinated by this idea and wanted to use this approach to secure my own private servers, but fully based on Opensource.
+
+The scope of this paper is to provide you an overview and a good start set.
+To authenticate in a modern way, we use client certificates for authentication, as a starter purely with software certificates.
+
+We will setup the IAM solution and the access proxy, both components are needed for an Beyond corp setup.
+
+As IAM solution I decided to use the great keycloak toolkit ![](https://www.keycloak.org/). The access proxy is based on the known Apache 2 swerver with mode-auth-openidc ![](https://github.com/zmartzone/mod_auth_openidc). All certificas were issued by the  letsencrypt.
+
+
+
+## Tools used ##
+
+* Keycloak 4.0.0
 * Apache 2
 * mode-auth-openidc (evtl. in universe package from Ubuntu)
-* nginx
 * letsencrypt
 
 
@@ -19,9 +36,11 @@
 openssl pkcs12 -export -in /etc/letsencrypt/live/yourdomain.com/fullchain.pem -inkey /etc/letsencrypt/live/yourdomain.com/privkey.pem -out /etc/letsenscrypt/live/yourdomain.com/pkcs.p12 -name mytlskeyalias -passout pass:mykeypassword
 ```
 
+This step is needed, if your keycloak server is directly connected to the internet and no apache / nginx server is in front.
+
 Key store should now like this this
 
-<add keystore pic here>
+![Keystore](https://github.com/schmalle/bcathome/raw/master/pics/keystore.png)
 
 3. Generate own ca and client certificate
 
@@ -58,7 +77,11 @@ Combines client.crt and client.key into a single PEM file for programs using ope
 openssl pkcs12 -in client.p12 -out client.pem -clcerts
 ```
 
+Add this keys to the truststore for the Java environment. For the demo case I have used my private email adress as CN etc.
 
+![Truststore](https://github.com/schmalle/bcathome/raw/master/pics/truststore.png)
+
+This truststore must contain all CA keys for the to be authenticated users via x.509.
 
 
 ## Installation ##
@@ -68,8 +91,8 @@ openssl pkcs12 -in client.p12 -out client.pem -clcerts
 
 add within
 
-<security-realmsY add
-
+<security-realms>
+```
 <security-realm name="ssl-realm">
      <server-identities>
          <ssl>
@@ -81,91 +104,86 @@ add within
          <properties path="application-users.properties" relative-to="jboss.server.config.dir"/>
      </authentication>
              <authentication>
-                     <truststore path="server.truststore" relative-to="jboss.server.config.dir" keystore-password="flk48e7" />
+                     <truststore path="server.truststore" relative-to="jboss.server.config.dir" keystore-password="<yourpassword" />
              </authentication>
 
  </security-realm>
+ ```
+
+This step is needed to enable the access to the https certificate and also the trusted client cas.
+
+N.B. In keycloak there exists an application realm with nearly the same entries, I have still added the additional "ssl-realm".
+
+Additional search for the HTTPS listener and add a "very-client = preferred" entry.
 
 
-Additional search for the HTTPS listener and add
-
-
-
-
-#generate-self-signed-certificate-host="localhost"/>
-
-(adapt for your passwords etc.)
-
-copy /home/flake/keycloak-4.0.0.Beta3/standalone/configuration/application.keystore
-
-Create admin user for keycloak locally
+Create admin user for keycloak locally on the system where you installed keycloak.
 
 ./add-user-keycloak.sh -u admin
 
 
-3. start keycloak by calling ./standalone.sh -b <IP to bind to>
+Start keycloak by calling ./standalone.sh -b <IP to bind to>
 
 Start configuring Flows / Grants
 (taken from https://www.keycloak.org/docs/3.3/server_admin/topics/authentication/x509.html)
 
-4.
 
-sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
-apt-get install libapache2-mod-auth-openidc
+3. After Keycloak is not setup, prepare your Apache servers
 
+A sample configuration could look like this
 
-
-
-
+```
+<IfModule mod_ssl.c>
 
 
+NameVirtualHost *:443
 
-<VirtualHost *:80>
-	ServerAdmin webmaster@localhost
-	DocumentRoot /var/www/html
+<VirtualHost *:443>
+ ServerName <your server name>
+ DocumentRoot /var/www/dev
 
-	ErrorLog /proc/self/fd/1
-	CustomLog /proc/self/fd/2 combined
+ SSLEngine on
+ SSLProxyEngine on
+ SSLCertificateChainFile /etc/letsencrypt/live/<your server name>/fullchain.pem
+ SSLCertificateFile /etc/letsencrypt/live/<your server name>/cert.pem
+ SSLCertificateKeyFile /etc/letsencrypt/live/<your server name>/privkey.pem
 
-	OIDCProviderMetadataURL http://keycloak:8080/auth/realms/Testrealm/.well-known/openid-configuration
-	#OIDCRedirectURI http://openidc/oauth2callback
-	OIDCRedirectURI http://openidc/protected/redirect_uri
-	OIDCCryptoPassphrase 0123456789
-	OIDCClientID testclient
-	OIDCClientSecret 12816dc7-cf40-4abc-8df7-581e56930cf5
+ OIDCProviderMetadataURL https://<your server name>:8443/auth/realms/master/.well-known/openid-configuration
+ OIDCRedirectURI https://<your server name>/secure/jenkins/
 
-	OIDCSessionType server-cache:persistent
-
-	OIDCRemoteUserClaim email
-	OIDCScope "openid email"
-	OIDCPassClaimsAs environment
-
-	Header setifempty Cache-Control "max-age=0, must-revalidate"
-
-	RedirectTemp /logout http://openidc/protected/redirect_uri?logout=http%3A%2F%2Fopenidc%2F%3Fwe-have-no-loggedout-page-yet
-
-	<Location /protected>
-		AuthType openid-connect
-		Require valid-user
-	</Location>
-
-</VirtualHost>
+ OIDCCryptoPassphrase <YOUR SECRET PASSPHRASE>
+ OIDCClientID <YOUR ID CREATED WITHIN KEYCLOAK>
+ OIDCClientSecret <YOUR SECRET>
 
 
 
-OIDCProviderMetadataURL https://keycloak.example.net/auth/realms/master/.well-known/openid-configuration
-OIDCRedirectURI https://www.example.net/oauth2callback
-OIDCCryptoPassphrase random1234
-OIDCClientID <your-client-id-registered-in-keycloak>
-OIDCClientSecret <your-client-secret-registered-in-keycloak>
-OIDCRemoteUserClaim email
-OIDCScope "openid email"
+  <Location "/login">
+     AuthType openid-connect
+     Require valid-user
+     ProxyPass https://<YOUR INTERNAL SERVER>:9443/login
+     ProxyPassReverse https://<YOUR INTERNAL SERVER>:9443/login
+ </Location>
 
-<Location /example/>
+  <Location "/secure">
+     AuthType openid-connect
+     Require valid-user
+  </Location>
+
+  <Location "/secure/jenkins">
+     AuthType openid-connect
+     Require valid-user
+     ProxyPass https://<YOUR INTERNAL SERVER>:9443/
+     ProxyPassReverse https://<YOUR INTERNAL SERVER>:9443/
+ </Location>
+
+ <Location "/">
    AuthType openid-connect
    Require valid-user
+   ProxyPass https://<YOUR INTERNAL SERVER>:9443/
+   ProxyPassReverse https://<YOUR INTERNAL SERVER>:9443/
 </Location>
+```
 
+Problems / challenges I run into:
 
-
-OpenID Connect Provider error: Remote user could not be set: contact the website administrator
+The correct value for OIDCRedirectURI (URI to be redirected after successful login) caused me headaches, as I often saw invalid URLs, the above mentioned example works, the basic idea is to point the URI within the procted area.
