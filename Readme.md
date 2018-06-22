@@ -33,7 +33,10 @@ As IAM solution I decided to use the great keycloak toolkit ![](https://www.keyc
 2. Convert it to pkcs12 to import it in your java key store
 
 ```
-openssl pkcs12 -export -in /etc/letsencrypt/live/yourdomain.com/fullchain.pem -inkey /etc/letsencrypt/live/yourdomain.com/privkey.pem -out /etc/letsenscrypt/live/yourdomain.com/pkcs.p12 -name mytlskeyalias -passout pass:mykeypassword
+openssl pkcs12 -export -in /etc/letsencrypt/live/yourdomain.com/fullchain.pem 
+-inkey /etc/letsencrypt/live/yourdomain.com/privkey.pem 
+-out /etc/letsenscrypt/live/yourdomain.com/pkcs.p12 
+-name mytlskeyalias -passout pass:mykeypassword
 ```
 
 This step is needed, if your keycloak server is directly connected to the internet and no apache / nginx server is in front.
