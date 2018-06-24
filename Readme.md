@@ -1,10 +1,12 @@
 # Beyond corp at home #
 
+Version 0.3, 24.06.2018
+
 ## Intro
 
-Ever read something about Beyond Corp [https://cloud.google.com/beyondcorp/] ? This is a very cool approach from Google and others basically to make all former intranet services available in the internet based on zero trust approaches. This drives efficiency dramatically and reduces vpn bottlenecks a lot.
+Ever read something about Beyond Corp [https://cloud.google.com/beyondcorp/] ? This is a very cool approach from Google and others basically to make all former intranet services available in the internet based on zero trust approaches. This Beyonf corp approach drives efficiency dramatically and reduces vpn bottlenecks a lot.
 
-Often you see nowadays 
+Zero trust approach means, that you dont even trust a client in your intranet.
 
 A typical BC architecure looks like this
 
@@ -15,18 +17,20 @@ So the main components are
 * an identity and access management (IAM) solution
 * an access gateway / access proxy
 
-I am fascinated by the Beyond Copr idea and wanted to use this approach to secure my own private servers, but fully based on Opensource.
+I am fascinated by the Beyond Corp idea and wanted to use this approach to secure my own private servers, but fully based on Opensource.
 
 The scope of this paper is to provide you an overview and a good start set.
 
 To authenticate in a modern way, we use client certificates for authentication, as a starter purely with software certificates.
 
-As IAM solution I decided to use the great keycloak toolkit ![](https://www.keycloak.org/). The access proxy is based on the known Apache 2 swerver with mode-auth-openidc ![](https://github.com/zmartzone/mod_auth_openidc). All certificas were issued by the  letsencrypt.
+As IAM solution I decided to use the great keycloak toolkit ![](https://www.keycloak.org/). The access proxy is based on the known Apache 2 swerver with mode-auth-openidc ![](https://github.com/zmartzone/mod_auth_openidc). All external facing certificas were issued by the  letsencrypt.
+
+Full beyond corp approaches authenticate user and machine. For this approach here, only the user is authenticated with a browser certificate (hardware based approaches also work). If you want additionally to authenticate the machine, a test for a machine certificate could be also tested directly in front of the Keycloak installation based on standard Apache2 authentication mechanisms.
 
 ## Tools / Versions used in detail used ##
 
-* Keycloak 4.0.0
-* Apache 2 (from Ubuntu 18.04 repository)
+* [Keycloak 4.0.0] (https://www.keycloak.org/)
+* Apache 2 
 * mode-auth-openidc (evtl. in universe package from Ubuntu), version from 20th of June 2018
 * letsencrypt
 
