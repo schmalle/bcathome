@@ -31,7 +31,7 @@ Full beyond corp approaches authenticate user and machine. For this approach her
 
 * [Keycloak 4.0.0] (https://www.keycloak.org/)
 * Apache 2 
-* mode-auth-openidc (evtl. in universe package from Ubuntu), version from 20th of June 2018
+* mode-auth-openidc (evtl. in universe package from Ubuntu), version from 20th of June 2018 [](https://github.com/zmartzone/mod_auth_openidc)
 * letsencrypt
 
 
