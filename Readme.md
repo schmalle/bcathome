@@ -124,7 +124,7 @@ This step is needed to enable the access to the https certificate and also the t
 
 N.B. In keycloak there exists an application realm with nearly the same entries, I have still added the additional "ssl-realm".
 
-Additional search for the <b>HTTPS listener</b> and add a "very-client = preferred" entry.
+Additional search for the <b>HTTPS listener</b> and add a <b>"very-client = preferred"</b> entry.
 
 
 Create admin user for keycloak locally on the system where you installed keycloak.
@@ -141,6 +141,10 @@ Start configuring Flows / Grants
 3. After Keycloak is not setup, prepare your Apache servers
 
 A sample configuration could look like this
+
+* assumption: Your to be exposed server listens on port 9443
+* assumption: You created a client within keycloak ![](https://github.com/schmalle/bcathome/raw/master/pics/client.png) (Important here is that the client is set to confidential, if you really control the client).
+
 
 ```
 <IfModule mod_ssl.c>
