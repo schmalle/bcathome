@@ -4,6 +4,8 @@
 
 Ever read something about Beyond Corp [https://cloud.google.com/beyondcorp/] ? This is a very cool approach from Google and others basically to make all former intranet services available in the internet based on zero trust approaches. This drives efficiency dramatically and reduces vpn bottlenecks a lot.
 
+Often you see nowadays 
+
 A typical BC architecure looks like this
 
 ![Beycond Corp architecture](https://www.beyondcorp.com/img/no-vpn-security-3-full.jpg)
