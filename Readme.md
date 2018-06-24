@@ -137,13 +137,12 @@ Start keycloak by calling ./standalone.sh -b <IP to bind to>
 Start configuring Flows / Grants
 (taken from https://www.keycloak.org/docs/3.3/server_admin/topics/authentication/x509.html)
 
+Now create a client within keycloak ![](https://github.com/schmalle/bcathome/raw/master/pics/client.png) (Important here is that the client is set to confidential, if you really control the client).
 
-3. After Keycloak is not setup, prepare your Apache servers
+
+After Keycloak is not setup, prepare your Apache servers
 
 A sample configuration could look like this
-
-* assumption: Your to be exposed server listens on port 9443
-* assumption: You created a client within keycloak ![](https://github.com/schmalle/bcathome/raw/master/pics/client.png) (Important here is that the client is set to confidential, if you really control the client).
 
 
 ```
