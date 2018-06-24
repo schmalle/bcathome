@@ -100,9 +100,7 @@ This truststore must contain all CA keys for the to be authenticated users via x
 1. Unpack Keycloack
 2. Edit standalone.xml in /standalone/configuration/
 
-add within
-
-<security-realms>
+add within <security-realms>
 
 ```
 <security-realm name="ssl-realm">
@@ -126,7 +124,7 @@ This step is needed to enable the access to the https certificate and also the t
 
 N.B. In keycloak there exists an application realm with nearly the same entries, I have still added the additional "ssl-realm".
 
-Additional search for the HTTPS listener and add a "very-client = preferred" entry.
+Additional search for the <b>HTTPS listener</b> and add a "very-client = preferred" entry.
 
 
 Create admin user for keycloak locally on the system where you installed keycloak.
