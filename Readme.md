@@ -197,6 +197,24 @@ NameVirtualHost *:443
 </Location>
 ```
 
+## Get started
+
+Surfing to https://<YOUR SIDE> will bring you to the keycloak authentication and afterwards to your internal server listening at port 9443 (in my case Jenkins).
+
+Surfing to https://<YOUR SIDE>:8443 will bring you to the keycloak authentication.
+     
+
+## Conclusion
+
+Beyond corp approaches up to a certain limit can be fully based on open source software today available.
+
+## Open issues
+
+* add more text
+* implement single sign on with Jenkins
+
+
+
 Problems / challenges I run into:
 
 The correct value for OIDCRedirectURI (URI to be redirected after successful login) caused me headaches, as I often saw invalid URLs, the above mentioned example works, the basic idea is to point the URI within the procted area.
