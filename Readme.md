@@ -132,7 +132,7 @@ This step is needed to enable the access to the https certificate and also the t
 
 N.B. In keycloak there exists an application realm with nearly the same entries, I have still added the additional "ssl-realm".
 
-Additional search for the <b>HTTPS listener</b> and add a "very-client = preferred" entry.
+Additional search for the <b>HTTPS listener</b> and add a <b>"very-client = preferred"</b> entry.
 
 
 Create admin user for keycloak locally on the system where you installed keycloak.
@@ -145,10 +145,12 @@ Start keycloak by calling ./standalone.sh -b <IP to bind to>
 Start configuring Flows / Grants
 (taken from https://www.keycloak.org/docs/3.3/server_admin/topics/authentication/x509.html)
 
+Now create a client within keycloak ![](https://github.com/schmalle/bcathome/raw/master/pics/client.png) (Important here is that the client is set to confidential, if you really control the client).
 
 3. After Keycloak is now setup, prepare your Apache servers
 
 A sample configuration could look like this (Jenkins is listening local on port 9443, keycloack is listening on the public ip on port 8443)
+
 
 ```
 <IfModule mod_ssl.c>
@@ -202,7 +204,25 @@ NameVirtualHost *:443
 </Location>
 ```
 
-## Problems / challenges I run into:
+## Get started
+
+Surfing to https://<YOUR SIDE> will bring you to the keycloak authentication and afterwards to your internal server listening at port 9443 (in my case Jenkins).
+
+Surfing to https://<YOUR SIDE>:8443 will bring you to the keycloak authentication.
+
+
+## Conclusion
+
+Beyond corp approaches up to a certain limit can be fully based on open source software today available.
+
+## Open issues
+
+* add more text
+* implement single sign on with Jenkins
+
+
+
+Problems / challenges I run into:
 
 The correct value for OIDCRedirectURI (URI to be redirected after successful login) caused me headaches, as I often saw invalid URLs, the above mentioned example works, the basic idea is to point the URI within the procted area.
 
