@@ -1,36 +1,44 @@
 # Beyond corp at home #
 
-Version 0.3, 24.06.2018
+Version 0.31, 30.06.2018
 
 ## Intro
 
-Ever read something about Beyond Corp [https://cloud.google.com/beyondcorp/] ? This is a very cool approach from Google and others basically to make all former intranet services available in the internet based on zero trust approaches. This Beyonf corp approach drives efficiency dramatically and reduces vpn bottlenecks a lot.
+Ever read something about Beyond Corp [https://cloud.google.com/beyondcorp/] ? This is a very cool approach from Google and others basically to make all former intranet services available in the internet based on zero trust approaches. This Beyond corp approach drives efficiency dramatically and reduces vpn bottlenecks a lot.
+
+Why ?
+
+* users do not need anymore VPN dialins (ok, for most cases this makes sense, critical admin stuff I would still do via VPN), saving per user some time per day
+* If you VPN is limited to a certain bandwidth, you have a dramatically better surfing experince, if you not use use VPN
+* bandwith of your services in general is not limited the capacity of a single vpn gateway or cluster
 
 Zero trust approach means, that you dont even trust a client in your intranet.
 
 A typical BC architecure looks like this
 
 ![Beycond Corp architecture](https://www.beyondcorp.com/img/no-vpn-security-3-full.jpg)
+(source: Beycond Corp homepage)
 
 So the main components are
 
 * an identity and access management (IAM) solution
 * an access gateway / access proxy
 
-I am fascinated by the Beyond Corp idea and wanted to use this approach to secure my own private servers, but fully based on Opensource.
+I am fascinated by the Beyond Corp idea and wanted to use this approach to secure my own private servers, but fully based on Opensource. Obviously I had to make some assumptions here, so a secure system is identified by a certificate and the user authentication is handled also very certificates. Often you see BC platforms, which also check the validity of the system itself much more complex, but for my home approach, I decided to keep it simple.
 
 The scope of this paper is to provide you an overview and a good start set.
 
-To authenticate in a modern way, we use client certificates for authentication, as a starter purely with software certificates.
 
 As IAM solution I decided to use the great keycloak toolkit ![](https://www.keycloak.org/). The access proxy is based on the known Apache 2 swerver with mode-auth-openidc ![](https://github.com/zmartzone/mod_auth_openidc). All external facing certificas were issued by the  letsencrypt.
 
 Full beyond corp approaches authenticate user and machine. For this approach here, only the user is authenticated with a browser certificate (hardware based approaches also work). If you want additionally to authenticate the machine, a test for a machine certificate could be also tested directly in front of the Keycloak installation based on standard Apache2 authentication mechanisms.
 
+(Note: I struggled into problems, as I did not find an easy way to use Letsencrypt certifcates and self signed machine certificates).
+
 ## Tools / Versions used in detail used ##
 
 * [Keycloak 4.0.0] (https://www.keycloak.org/)
-* Apache 2 
+* Apache 2
 * mode-auth-openidc (evtl. in universe package from Ubuntu), version from 20th of June 2018 [](https://github.com/zmartzone/mod_auth_openidc)
 * letsencrypt
 
@@ -41,9 +49,9 @@ Full beyond corp approaches authenticate user and machine. For this approach her
 2. Convert it to pkcs12 to import it in your java key store
 
 ```
-openssl pkcs12 -export -in /etc/letsencrypt/live/yourdomain.com/fullchain.pem 
--inkey /etc/letsencrypt/live/yourdomain.com/privkey.pem 
--out /etc/letsenscrypt/live/yourdomain.com/pkcs.p12 
+openssl pkcs12 -export -in /etc/letsencrypt/live/yourdomain.com/fullchain.pem
+-inkey /etc/letsencrypt/live/yourdomain.com/privkey.pem
+-out /etc/letsenscrypt/live/yourdomain.com/pkcs.p12
 -name mytlskeyalias -passout pass:mykeypassword
 ```
 
@@ -138,9 +146,9 @@ Start configuring Flows / Grants
 (taken from https://www.keycloak.org/docs/3.3/server_admin/topics/authentication/x509.html)
 
 
-3. After Keycloak is not setup, prepare your Apache servers
+3. After Keycloak is now setup, prepare your Apache servers
 
-A sample configuration could look like this
+A sample configuration could look like this (Jenkins is listening local on port 9443, keycloack is listening on the public ip on port 8443)
 
 ```
 <IfModule mod_ssl.c>
@@ -194,6 +202,10 @@ NameVirtualHost *:443
 </Location>
 ```
 
-Problems / challenges I run into:
+## Problems / challenges I run into:
 
 The correct value for OIDCRedirectURI (URI to be redirected after successful login) caused me headaches, as I often saw invalid URLs, the above mentioned example works, the basic idea is to point the URI within the procted area.
+
+## Conclusion:
+
+"Beyond corp" approaches for the home environment are relative easy to setup using existing open source tooling.
