@@ -147,7 +147,9 @@ Start configuring Flows / Grants
 
 Now create a client within keycloak ![](https://github.com/schmalle/bcathome/raw/master/pics/client.png) (Important here is that the client is set to confidential, if you really control the client).
 
-3. After Keycloak is now setup, prepare your Apache servers
+3. Disable login confirmation (last point on the page) ![](https://github.com/schmalle/bcathome/raw/master/pics/ConfigAuthentication.png)
+
+4. After Keycloak is now setup, prepare your Apache servers
 
 A sample configuration could look like this (Jenkins is listening local on port 9443, keycloack is listening on the public ip on port 8443)
 
