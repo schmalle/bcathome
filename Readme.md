@@ -14,7 +14,7 @@ Why ?
 
 Zero trust approach means, that you dont even trust a client in your intranet.
 
-A typical BC architecure looks like this
+A typical BC architecture looks like this
 
 ![Beycond Corp architecture](https://www.beyondcorp.com/img/no-vpn-security-3-full.jpg)
 (source: Beycond Corp homepage)
