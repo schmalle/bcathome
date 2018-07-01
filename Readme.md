@@ -9,10 +9,10 @@ Ever read something about Beyond Corp [https://cloud.google.com/beyondcorp/] ? T
 Why ?
 
 * users do not need anymore VPN dialins (ok, for most cases this makes sense, critical admin stuff I would still do via VPN), saving per user some time per day
-* If you VPN is limited to a certain bandwidth, you have a dramatically better surfing experince, if you not use use VPN
-* bandwith of your services in general is not limited the capacity of a single vpn gateway or cluster
+* If you VPN is limited to a certain bandwidth, you have a dramatically better surfing experience, if you not use use VPN
+* bandwidth of your services in general is not limited the capacity of a single vpn gateway or cluster
 
-Zero trust approach means, that you dont even trust a client in your intranet.
+Zero trust approach means, that you don't even trust a client in your intranet.
 
 A typical BC architecture looks like this
 
@@ -55,7 +55,7 @@ openssl pkcs12 -export -in /etc/letsencrypt/live/yourdomain.com/fullchain.pem
 -name mytlskeyalias -passout pass:mykeypassword
 ```
 
-This step is needed, if your keycloak server is directly connected to the internet and no apache / nginx server is in front.
+This step is needed, if your keycloak server is directly connected to the internet and no apache / nginx server is in front. For my test setup, I used exactly this setup, for production, a reverse proxy makes clearly sense.
 
 Key store should now like this this
 
@@ -172,7 +172,7 @@ NameVirtualHost *:443
  OIDCRedirectURI https://<your server name>/secure/jenkins/
 
  OIDCCryptoPassphrase <YOUR SECRET PASSPHRASE>
- OIDCClientID <YOUR ID CREATED WITHIN KEYCLOAK>
+ OIDCClientID <YOUR CLIENT ID CREATED WITHIN KEYCLOAK>
  OIDCClientSecret <YOUR SECRET>
 
 
