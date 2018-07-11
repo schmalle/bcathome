@@ -1,1 +1,12 @@
 ./etc/
+etc
+.vagrant
+.idea
+keycloak-4.0.0.Beta3
+*.key
+*.crt
+*.p12
+*.zip
+*.pem
+*.csr
+*.log
