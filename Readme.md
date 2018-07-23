@@ -11,6 +11,7 @@ Why ?
 * users do not need anymore VPN dialins (ok, for most cases this makes sense, critical admin stuff I would still do via VPN), saving per user some time per day
 * If you VPN is limited to a certain bandwidth, you have a dramatically better surfing experience, if you not use use VPN
 * bandwidth of your services in general is not limited the capacity of a single vpn gateway or cluster
+* cost reduction (no intranet infrastructure anymore)
 
 Zero trust approach means, that you don't even trust a client in your intranet.
 
