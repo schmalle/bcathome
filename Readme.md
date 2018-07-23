@@ -30,7 +30,7 @@ I am fascinated by the Beyond Corp idea and wanted to use this approach to secur
 The scope of this paper is to provide you an overview and a good start set.
 
 
-As IAM solution I decided to use the great keycloak toolkit ![](https://www.keycloak.org/). The access proxy is based on the known Apache 2 swerver with mode-auth-openidc ![](https://github.com/zmartzone/mod_auth_openidc). All external facing certificas were issued by the  letsencrypt.
+As IAM solution I decided to use the great [keycloak toolkit !](https://www.keycloak.org/). The access proxy is based on the known Apache 2 swerver with mode-auth-openidc ![](https://github.com/zmartzone/mod_auth_openidc). All external facing certificas were issued by the  letsencrypt.
 
 Full beyond corp approaches authenticate user and machine. For this approach here, only the user is authenticated with a browser certificate (hardware based approaches also work). If you want additionally to authenticate the machine, a test for a machine certificate could be also tested directly in front of the Keycloak installation based on standard Apache2 authentication mechanisms.
 
