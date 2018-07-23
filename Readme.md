@@ -214,10 +214,6 @@ Surfing to https://<YOUR SIDE> will bring you to the keycloak authentication and
 Surfing to https://<YOUR SIDE>:8443 will bring you to the keycloak authentication.
 
 
-## Conclusion
-
-Beyond corp approaches up to a certain limit can be fully based on open source software today available.
-
 ## Open issues
 
 * add more text
