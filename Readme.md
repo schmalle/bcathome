@@ -1,6 +1,6 @@
-# Beyond corp at home (DRAFT!!!) #
+# "Beyond corp" at home #
 
-Version 0.31, 30.06.2018
+Version 0.90, 02.09.2018
 
 ## Intro
 
@@ -13,7 +13,8 @@ Why ?
 * bandwidth of your services in general is not limited the capacity of a single vpn gateway or cluster
 * cost reduction (no intranet infrastructure anymore)
 
-Zero trust approach means, that you don't even trust a client in your intranet.
+Zero trust approach means, that you don't even trust a client in your intranet, access to your resources depends on the knowledge of the system and the user.
+
 
 A typical BC architecture looks like this
 
@@ -25,6 +26,12 @@ So the main components are
 * an identity and access management (IAM) solution
 * an access gateway / access proxy
 
+In a company you have device management systems, which could e.g. push device certificates on approved systems and you could enforce 2FA authentication.
+
+
+#### and @ home ? ####
+
+
 I am fascinated by the Beyond Corp idea and wanted to use this approach to secure my own private servers, but fully based on Opensource. Obviously I had to make some assumptions here, so a secure system is identified by a certificate and the user authentication is handled also very certificates. Often you see BC platforms, which also check the validity of the system itself much more complex, but for my home approach, I decided to keep it simple.
 
 The scope of this paper is to provide you an overview and a good start set.
@@ -34,7 +41,7 @@ As IAM solution I decided to use the great [keycloak toolkit !](https://www.keyc
 
 Full beyond corp approaches authenticate user and machine. For this approach here, only the user is authenticated with a browser certificate (hardware based approaches also work). If you want additionally to authenticate the machine, a test for a machine certificate could be also tested directly in front of the Keycloak installation based on standard Apache2 authentication mechanisms.
 
-(Note: I struggled into problems, as I did not find an easy way to use Letsencrypt certifcates and self signed machine certificates).
+(Note: I struggled into problems, as I did not find an easy way to use Letsencrypt certifcates and self signed machine certificates within Apache, however NGINX seems to be work more easy here).
 
 ## Tools / Versions used in detail used ##
 
@@ -56,9 +63,9 @@ openssl pkcs12 -export -in /etc/letsencrypt/live/yourdomain.com/fullchain.pem
 -name mytlskeyalias -passout pass:mykeypassword
 ```
 
-This step is needed, if your keycloak server is directly connected to the internet and no apache / nginx server is in front. For my test setup, I used exactly this setup, for production, a reverse proxy makes clearly sense.
+This step is needed, if your keycloak server is directly connected to the internet and no apache / nginx server is in front. For my test setup, I used exactly this setup, for production, a reverse proxy clearly makes sense.
 
-Key store should now like this this
+Key store should now like this
 
 ![Keystore](https://github.com/schmalle/bcathome/raw/master/pics/keystore.png)
 
@@ -104,6 +111,7 @@ Add this keys to the truststore for the Java environment. For the demo case I ha
 This truststore must contain all CA keys for the to be authenticated users via x.509.
 
 
+
 ## Installation ##
 
 1. Unpack Keycloack
@@ -129,7 +137,7 @@ add within <security-realms>
  </security-realm>
  ```
 
-This step is needed to enable the access to the https certificate and also the trusted client cas.
+This step is needed to enable the access to the https certificate and also the trusted client CAs.
 
 N.B. In keycloak there exists an application realm with nearly the same entries, I have still added the additional "ssl-realm".
 
@@ -223,8 +231,14 @@ Surfing to https://<YOUR SIDE>:8443 will bring you to the keycloak authenticatio
 
 Problems / challenges I run into:
 
-The correct value for OIDCRedirectURI (URI to be redirected after successful login) caused me headaches, as I often saw invalid URLs, the above mentioned example works, the basic idea is to point the URI within the procted area.
+The correct value for OIDCRedirectURI (URI to be redirected after successful login) caused me headaches, as I often saw invalid URLs, the above mentioned example works, the basic idea is to point the URI within the protected area.
 
 ## Conclusion:
 
 "Beyond corp" approaches for the home environment are relative easy to setup using existing open source tooling.
+
+During my research I also found some more interesting topics to look more deeply into such as
+
+* https://github.com/ory/
+* https://github.com/zmartzone/mod_auth_openidc
+*
